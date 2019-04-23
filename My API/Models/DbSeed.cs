@@ -8,16 +8,26 @@ namespace My_API.Models
 {
     public static class DbSeed
     {
+        /// <summary>
+        /// Metodo inicializador de la Db
+        /// verifica si exite, si no, la cra.
+        /// </summary>
+        /// <param name="context"></param>
         public static void SeedData(MyDbContext context)
         {
             var check = context.Database.EnsureCreated();
             if (check)
             {
-                InsertData(context);
+                InsertBooks(context);
+                InsertRates(context);
             }
         }
 
-        public static void InsertData (MyDbContext context)
+        /// <summary>
+        /// Metodo inserta libros
+        /// </summary>
+        /// <param name="context"></param>
+        public static void InsertBooks (MyDbContext context)
         {
             context.libro.AddRange(new List<Libro>
             {
@@ -61,5 +71,62 @@ namespace My_API.Models
             });
             context.SaveChanges();
         }
+
+        /// <summary>
+        /// Metodo inserta calificaciones
+        /// </summary>
+        /// <param name="context"></param>
+        private static void InsertRates(MyDbContext context)
+        {
+            context.calificacion.AddRange(new List<Calificacion>
+            {
+                new Calificacion
+                {
+                    LibroCodigo=1,
+                    Rate=1,
+                },new Calificacion
+                {
+                    LibroCodigo=1,
+                    Rate=-1,
+                },
+                new Calificacion
+                {
+                    LibroCodigo=1,
+                    Rate=1,
+                },
+                new Calificacion
+                {
+                    LibroCodigo=1,
+                    Rate=1,
+                },
+                new Calificacion
+                {
+                    LibroCodigo=2,
+                    Rate=-1,
+                },
+                new Calificacion
+                {
+                    LibroCodigo=2,
+                    Rate=1,
+                },
+                new Calificacion
+                {
+                    LibroCodigo=2,
+                    Rate=1,
+                },
+                new Calificacion
+                {
+                    LibroCodigo=3,
+                    Rate=1,
+                },
+                new Calificacion
+                {
+                    LibroCodigo=4,
+                    Rate=1,
+                }
+            });
+            context.SaveChanges();
+        }
+
     }
 }

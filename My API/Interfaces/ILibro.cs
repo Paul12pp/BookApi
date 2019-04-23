@@ -8,7 +8,7 @@ namespace My_API.Interfaces
 {
     public interface ILibro
     {
-        IEnumerable<Libro> GetAll();
+        IEnumerable<LibroView> GetAll();
         int RateLibro(RateViewModel model);
         int AddLibro(LibroModelView model);
     }

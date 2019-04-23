@@ -8,10 +8,10 @@ namespace My_API.Models
 {
     public class RateViewModel
     {
-        [Required]
+        [Required(ErrorMessage ="El campo LibroCodigo es requerido")]
         public int LibroCodigo { get; set; }
-        [Required]
-        [Range(-1,1)]
+        [Required(ErrorMessage ="El campo Rate es requerido")]
+        [Range(-1,1,ErrorMessage ="La calificación debe ser -1 o 1.")]
         public int Rate { get; set; }   
     }
 }

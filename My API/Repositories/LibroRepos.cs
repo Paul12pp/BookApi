@@ -18,14 +18,46 @@ namespace My_API.Repositories
         {
 
         }
-        public IEnumerable<Libro> GetAll()
+
+        /// <summary>
+        /// Metodo obtener libros
+        /// </summary>
+        /// <returns></returns>
+        public IEnumerable<LibroView> GetAll()
         {
-            var data = _db.libro
-                .OrderByDescending(r=>r.Fecha_p)
+            var data = _db.libro.ToList();
+            List<LibroView> libroV = new List<LibroView>();
+            foreach (var item in data)
+            {
+                var rate = _db.calificacion
+                    .Where(r => r.LibroCodigo == item.Codigo).ToList();
+                decimal calif = (rate.Count > 0)
+                    ? Convert.ToDecimal(rate.Sum(r => r.Rate)) / rate.Count
+                    : 0;
+                calif = Convert.ToDecimal(calif.ToString("0.##"));
+
+                libroV.Add(
+                    new LibroView
+                    {
+                        Codigo=item.Codigo,
+                        Titulo = item.Titulo,
+                        Descripcion = item.Descripcion,
+                        Fecha_p = item.Fecha_p,
+                        Autor = item.Autor,
+                        Rate_Average = calif
+                    });
+            }
+            
+            return libroV
+                .OrderByDescending(r => r.Fecha_p)
                 .ToList();
-            return data;
         }
 
+        /// <summary>
+        /// Metodo agregar libros
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
         public int AddLibro(LibroModelView model)
         {
             try
@@ -47,9 +79,13 @@ namespace My_API.Repositories
             }
         }
 
+        /// <summary>
+        /// Metodo calificar libro
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
         public int RateLibro(RateViewModel model)
-        {
-            
+        { 
             try
             {
                 var libro = _db.libro
@@ -63,6 +99,7 @@ namespace My_API.Repositories
                     LibroCodigo = model.LibroCodigo,
                     Rate = model.Rate
                 };
+                if (cal.Rate == 0) { return 500;}
                 _db.calificacion.Add(cal);
                 _db.SaveChanges();
                 return 201;
