@@ -27,7 +27,7 @@ namespace My_API.Controllers
         /// <summary>
         /// La accion principal del controlador
         /// con el listado de los pedidos
-        /// con su calificacion
+        /// y su calificacion
         /// </summary>
         /// <returns>List<LibroView></returns>
         [Route("")]
@@ -39,10 +39,29 @@ namespace My_API.Controllers
         }
 
         /// <summary>
+        /// La accion de retornar libro
+        /// por el id
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [Route("{id}")]
+        [HttpGet]
+        public ActionResult<LibroView> Get(int id)
+        {
+           var libros = _context.GetLibroById(id);
+            if (libros == null)
+            {
+                return NotFound(new Response(404,"No encontrado"));
+            }
+            return Ok(libros);
+        }
+
+        /// <summary>
         /// Metodo post para calificar un libro
         /// retorna un codigo segun el resultado
+        /// Verificar definicion del modelo
         /// </summary>
-        /// <param name="model"></param>
+        /// <param name="model">codigolibro y rate</param>
         /// <returns>StatusCode</returns>
         [Route("Rate")]
         [HttpPost]
@@ -50,7 +69,7 @@ namespace My_API.Controllers
         {
             if (!ModelState.IsValid)
             {
-                return BadRequest();
+                return BadRequest(new Response(400, "Modelo enviado es invalido"));
             }
             var result = _context.RateLibro(model);
             switch (result)
@@ -58,11 +77,11 @@ namespace My_API.Controllers
                 case 201:
                     return Created("/",model);
                 case 404:
-                    return NotFound(model);
+                    return NotFound(new Response(404, " Objecto no encontrado"));
                 case 500:
-                    return BadRequest(model);
+                    return BadRequest(new Response(400, "Ha ocurrido un error"));
                 default:
-                    return BadRequest(model);
+                    return BadRequest(new Response(400, "Ha ocurrido un error"));
             }
         }
 
@@ -70,7 +89,8 @@ namespace My_API.Controllers
         /// Metodo post para crear libro
         /// recibe los parametros especificados
         /// en el archivo. Retorna un codigo de
-        /// estatus segun el resultado
+        /// estatus segun el resultado.
+        /// Verificar definicion del modelo
         /// </summary>
         /// <param name="model"></param>
         /// <returns>StatusCode</returns>
@@ -80,14 +100,14 @@ namespace My_API.Controllers
         {
             if(!ModelState.IsValid)
             {
-                return BadRequest();
+                return BadRequest(new Response(400, "Modelo enviado no es valido"));
             }
             var result = _context.AddLibro(model);
             if (result == 201)
             {
                 return Created("/", model);
             }
-            return BadRequest();
+            return BadRequest(new Response(400, "Ha ocurrido un error"));
         }
 
     }

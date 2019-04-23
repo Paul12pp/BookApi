@@ -50,7 +50,7 @@ namespace My_API.Repositories
             
             return libroV
                 .OrderByDescending(r => r.Fecha_p)
-                .ToList();
+                .ToList().Take(3);
         }
 
         /// <summary>
@@ -108,6 +108,36 @@ namespace My_API.Repositories
             {
                 return 500;
             }
+        }
+
+        /// <summary>
+        /// Metodo retorna libro por Id
+        /// </summary>
+        /// <returns></returns>
+        public LibroView GetLibroById(int id)
+        {
+            var libro = _db.libro
+                .SingleOrDefault(r => r.Codigo == id);
+            if (libro == null)
+            {
+                return null;
+            }
+            var rate = _db.calificacion
+                    .Where(r => r.LibroCodigo == libro.Codigo).ToList();
+            decimal calif = (rate.Count > 0)
+                ? Convert.ToDecimal(rate.Sum(r => r.Rate)) / rate.Count
+                : 0;
+            calif = Convert.ToDecimal(calif.ToString("0.##"));
+            var view = new LibroView
+            {
+                Codigo = libro.Codigo,
+                Titulo = libro.Titulo,
+                Descripcion = libro.Descripcion,
+                Fecha_p = libro.Fecha_p,
+                Autor = libro.Autor,
+                Rate_Average = calif
+            };
+            return view;
         }
     }
 }
